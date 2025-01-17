@@ -1,6 +1,12 @@
+"""
+Dimitrakopoulos Stylianos 
+AM: 18390149
+Προγραμμα Σπουδων ΠΑΔΑ
+"""
+
 from search_engine import load_documents, load_inverted_index, boolean_search, tfidf_retrieval, bm25_retrieval
 
-# Load necessary data
+# Φόρτωση αρχειων
 titles, documents = load_documents("processed_articles.csv")
 inverted_index = load_inverted_index("inverted_index.json")
 
@@ -14,7 +20,7 @@ test_queries = [
     {"query": "maria AND NOT russian", "expected": set()},  # Expect empty if "Main Page" contains "russian"
 ]
 
-# Function to test any retrieval method
+# Function για test ολων των retrieval methods
 def run_tests(retrieval_function, method_name):
     print(f"\n🔍 Testing {method_name} Retrieval...")
     
@@ -34,7 +40,6 @@ def run_tests(retrieval_function, method_name):
         print(f"✅ {method_name} Search Result: {result}")
         print(f"🟢 Pass: {result == expected}\n")
 
-# Run all tests
 if __name__ == "__main__":
     run_tests(boolean_search, "Boolean")
     run_tests(tfidf_retrieval, "TF-IDF")

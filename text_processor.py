@@ -1,42 +1,47 @@
+"""
+Dimitrakopoulos Stylianos 
+AM: 18390149
+Προγραμμα Σπουδων ΠΑΔΑ
+"""
+
 import json
 import pandas as pd
 import re
+import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
-# Load the JSON file
+# Φoρτωση των άρθρων από  JSON
 with open('wikipedia_articles.json', 'r', encoding='utf-8') as f:
-    data = json.load(f)
+    articles_data = json.load(f)
 
-# Convert JSON to DataFrame
-df = pd.DataFrame(data)
+# Μετατροπή των δεδομένων σε DataFrame
+articles_df = pd.DataFrame(articles_data)
 
-# Custom tokenizer function
-def custom_tokenizer(text):
-    tokens = re.findall(r'\b\w+\b', text.lower())
-    return tokens
+# Συνάρτηση για την εξαγωγή λέξεων από το κείμενο
+def extract_tokens(text):
+    words = re.findall(r'\b\w+\b', text.lower())
+    return words
 
-# Apply tokenization
-df['tokens'] = df['content'].apply(custom_tokenizer)
+# tokenization
+articles_df['tokens'] = articles_df['content'].apply(extract_tokens)
 
-# Download NLTK data (if not already downloaded)
-import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
 
-# Remove stop words
-stop_words = set(stopwords.words('english'))
-df['filtered_tokens'] = df['tokens'].apply(
-    lambda tokens: [word for word in tokens if word not in stop_words]
+# Αφαίρεση stop words
+stop_words_set = set(stopwords.words('english'))
+articles_df['filtered_tokens'] = articles_df['tokens'].apply(
+    lambda words: [word for word in words if word not in stop_words_set]
 )
 
-# Apply stemming
-ps = PorterStemmer()
-df['stemmed_tokens'] = df['filtered_tokens'].apply(
-    lambda tokens: [ps.stem(word) for word in tokens]
+# stemming
+stemmer = PorterStemmer()
+articles_df['stemmed_tokens'] = articles_df['filtered_tokens'].apply(
+    lambda words: [stemmer.stem(word) for word in words]
 )
 
-# Save the processed data
-df[['title', 'stemmed_tokens']].to_csv('processed_articles.csv', index=False)
+# Αποθήκευση του επεξεργασμένου συνόλου δεδομένων σε CSV
+articles_df[['title', 'stemmed_tokens']].to_csv('processed_articles.csv', index=False)
 print("Processing complete. Data saved to 'processed_articles.csv'.")

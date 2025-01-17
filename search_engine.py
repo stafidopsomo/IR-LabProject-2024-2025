@@ -1,10 +1,16 @@
+"""
+Dimitrakopoulos Stylianos 
+AM: 18390149
+Προγραμμα Σπουδων ΠΑΔΑ
+"""
+
 import pandas as pd
 import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from rank_bm25 import BM25Okapi
 import numpy as np
 
-# Load documents from CSV
+# Load εγγράφων από CSV
 def load_documents(file_path="processed_articles.csv"):
     try:
         df = pd.read_csv(file_path)
@@ -25,7 +31,7 @@ def load_inverted_index(file_path="inverted_index.json"):
         print("Error: inverted_index.json not found.")
         exit()
 
-# Boolean Retrieval (Now applies `NOT` before returning results)
+# Boolean Retrieval 
 def boolean_search(query, inverted_index):
     terms = query.split()
     result_docs = set()
@@ -52,7 +58,7 @@ def boolean_search(query, inverted_index):
 
     return current_docs
 
-# TF-IDF Retrieval (Filters excluded docs before ranking)
+# TF-IDF Retrieval
 def tfidf_retrieval(query, documents, inverted_index, titles):
     vectorizer = TfidfVectorizer()
     doc_vectors = vectorizer.fit_transform(documents)
@@ -69,7 +75,7 @@ def tfidf_retrieval(query, documents, inverted_index, titles):
 
     return ranked_indices, scores[ranked_indices]
 
-# BM25 Retrieval (Filters excluded docs before ranking)
+# BM25 Retrieval
 def bm25_retrieval(query, documents, inverted_index, titles):
     tokenized_docs = [doc.split() for doc in documents]
     bm25 = BM25Okapi(tokenized_docs)
@@ -78,10 +84,9 @@ def bm25_retrieval(query, documents, inverted_index, titles):
     scores = bm25.get_scores(query_tokens)
     ranked_indices = np.argsort(scores)[::-1]
 
-    # Get Boolean filter
     allowed_docs = boolean_search(query, inverted_index)
 
-    # Filter out disallowed documents
+
     ranked_indices = [i for i in ranked_indices if titles[i] in allowed_docs]
 
     return ranked_indices, scores[ranked_indices]

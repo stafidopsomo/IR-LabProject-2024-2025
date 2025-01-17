@@ -1,48 +1,54 @@
+"""
+Dimitrakopoulos Stylianos 
+AM: 18390149
+Προγραμμα Σπουδων ΠΑΔΑ
+"""
+
 import json
 
-# Load the inverted index
-def load_inverted_index(file_path="inverted_index.json"):
+# Φόρτωση του inverted indexx
+def load_index(file_path="inverted_index.json"):
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-# Perform Boolean operations
-def boolean_search(query, inverted_index):
+# Εκτέλεση Boolean search
+def boolean_retrieval(query, index_data):
     terms = query.split()
-    result_docs = set()
+    results = set()
 
-    # Helper to fetch documents for a term
-    def get_docs(term):
-        return set(inverted_index.get(term, []))
+    # Συνάρτηση για εύρεση εγγράφων που περιέχουν έναν όρο
+    def fetch_docs(term):
+        return set(index_data.get(term, []))
 
-    # Process the query
-    current_docs = set()
+    current_set = set()
     operation = None
 
+    # Επεξεργασία του query
     for term in terms:
         if term.upper() in ["AND", "OR", "NOT"]:
             operation = term.upper()
         else:
-            docs = get_docs(term)
+            docs = fetch_docs(term)
 
             if operation == "AND":
-                current_docs &= docs
+                current_set &= docs
             elif operation == "OR":
-                current_docs |= docs
+                current_set |= docs
             elif operation == "NOT":
-                current_docs -= docs
-            else:  # First term
-                current_docs = docs
+                current_set -= docs
+            else:  # Πρώτος όρος στο query
+                current_set = docs
 
             operation = None
 
-    result_docs = current_docs
-    return result_docs
+    results = current_set
+    return results
 
-# Main function to handle queries
+# Εκτέλεση του προγράμματος για queries
 def main():
     print("Loading the inverted index...")
-    inverted_index = load_inverted_index()
-    print("Inverted index loaded successfully!")
+    index_data = load_index()
+    print("Inverted index loaded successfully.")
 
     print("\nEnter your query (e.g., 'term1 AND term2 OR NOT term3'):")
     while True:
@@ -50,12 +56,11 @@ def main():
         if query.lower() == "exit":
             break
 
-        results = boolean_search(query, inverted_index)
-        if results:
-            print(f"\nDocuments matching your query:\n{results}")
+        matching_docs = boolean_retrieval(query, index_data)
+        if matching_docs:
+            print(f"\nDocuments matching your query:\n{matching_docs}")
         else:
             print("\nNo matching documents found.")
 
-# Run the query handler
 if __name__ == "__main__":
     main()
