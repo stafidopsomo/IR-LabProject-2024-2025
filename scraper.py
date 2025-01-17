@@ -1,6 +1,16 @@
+"""
+Dimitrakopoulos Stylianos 
+AM: 18390149
+Προγραμμα Σπουδων ΠΑΔΑ
+"""
+
+
+
 import requests
 from bs4 import BeautifulSoup
 import json
+
+
 
 def scrape_wikipedia_articles(url, num_articles=5):
     base_url = "https://en.wikipedia.org"

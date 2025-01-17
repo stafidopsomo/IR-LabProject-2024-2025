@@ -1,3 +1,10 @@
+"""
+Dimitrakopoulos Stylianos 
+AM: 18390149
+Προγραμμα Σπουδων ΠΑΔΑ
+"""
+
+
 import numpy as np
 from sklearn.metrics import precision_score, recall_score, f1_score
 from search_engine import load_documents, load_inverted_index, boolean_search, tfidf_retrieval, bm25_retrieval
