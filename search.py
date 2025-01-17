@@ -20,7 +20,7 @@ test_queries = [
     {"query": "maria AND NOT russian", "expected": set()},  # Expect empty if "Main Page" contains "russian"
 ]
 
-# Function για test ολων των retrieval methods
+# Function για test όλων των retrieval methods
 def run_tests(retrieval_function, method_name):
     print(f"\n🔍 Testing {method_name} Retrieval...")
     
@@ -40,7 +40,46 @@ def run_tests(retrieval_function, method_name):
         print(f"✅ {method_name} Search Result: {result}")
         print(f"🟢 Pass: {result == expected}\n")
 
+# Function for custom user queries
+def run_custom_query():
+    print("\nSelect a retrieval model:")
+    print("1. Boolean Retrieval")
+    print("2. TF-IDF Retrieval")
+    print("3. Okapi BM25 Retrieval")
+    
+    choice = input("Enter your choice (1/2/3): ").strip()
+    model_mapping = {"1": ("Boolean", boolean_search), "2": ("TF-IDF", tfidf_retrieval), "3": ("Okapi BM25", bm25_retrieval)}
+    
+    if choice not in model_mapping:
+        print("Invalid choice. Exiting...")
+        return
+
+    model_name, model_function = model_mapping[choice]
+    query = input("\nEnter your query: ").strip()
+    
+    print(f"\n🔍 Running {model_name} Retrieval for query: {query}")
+
+    if model_name == "Boolean":
+        result = model_function(query, inverted_index)
+    else:
+        ranked_indices, scores = model_function(query, documents, inverted_index, titles)
+        result = {titles[idx] for idx in ranked_indices} if ranked_indices else set()
+
+    print(f"🔎 {model_name} Search Result: {result}\n")
+
+# Main execution flow
 if __name__ == "__main__":
-    run_tests(boolean_search, "Boolean")
-    run_tests(tfidf_retrieval, "TF-IDF")
-    run_tests(bm25_retrieval, "Okapi BM25")
+    print("Would you like to run the predefined test queries or enter a custom query?")
+    print("1. Run predefined test queries")
+    print("2. Enter custom query")
+
+    user_choice = input("Enter your choice (1/2): ").strip()
+
+    if user_choice == "1":
+        run_tests(boolean_search, "Boolean")
+        run_tests(tfidf_retrieval, "TF-IDF")
+        run_tests(bm25_retrieval, "Okapi BM25")
+    elif user_choice == "2":
+        run_custom_query()
+    else:
+        print("Invalid choice. Exiting...")
